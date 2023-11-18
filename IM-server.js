@@ -1,106 +1,47 @@
 // import necessary Node Package Manager (npm)
 
-const express = require("express")
-const path = require("path")
-const multer = require("multer")
-const sharp = require('sharp')
-const app = express()
-//const http = require('http').Server.app()
-const fs = require('fs')
-const QRCode = require('qrcode');
+const { exec } = require('child_process'); //Spawns a shell then executes the command within that shell, buffering any generated output. The command string passed to the exec function is processed directly by the shell and special characters (vary based on shell) need to be dealt with accordingly:
 const maxApi = require("max-api");
 const ip = require("ip")
 
-const port = process.env.PORT || 3000;
 
 
-app.use(express.static(__dirname));
+/**
+ * Checks if a given npm package is installed, and if not, installs it.
+ * @param {string} packageName - The name of the npm package to check and install.
+ */
+function requirePackage(packageName) {
+    try {
+        // Attempt to require the package. If it's installed, this will succeed.
+        return require(packageName);
+    } catch (e) {
+        // If an error is thrown, it means the package is not installed.
+        console.log(`${packageName} is not installed. Installing...`);
 
-//console.log(ip.address())
-function qr() {
-    console.log('url', `http://${ip.address()}:${port}`)
-    QRCode.toFile('qr.png', `http://${ip.address()}:${port}`, {
-        color: {
-            dark: '#000000',  // Blue dots
-            light: '#FFFFFF' // Transparent background
-        }
-    }, function (err) {
-        if (err) throw err
-        console.log('done')
-    })
+        // Use exec to run the npm install command and install the package.
+        exec(`npm install ${packageName}`, (err, stdout, stderr) => {
+            if (err) {
+                // If there's an error during installation, log it and exit.
+                console.error(`Error installing ${packageName}: ${err}`);
+                process.exit(1);
+            }
+            console.log(`${packageName} installed successfully.`);
 
+            // Require and return the package after successful installation.
+            return require(packageName);
+        });
+    }
 }
 
-function clear_files() {
-    fs.readdir('img', (err, files) => {
-        if (err) throw err;
 
-        for (const file of files) {
-            fs.unlink(path.join('img', file), (err) => {
-                if (err) throw err;
-            });
-        }
-    });
-}
+
 
 function get_ip() {
     maxApi.outlet(`${ip.address()}`)
 
 }
 
-// const storage = multer.diskStorage({
-//     destination: (req, file, callback) => callback(null, 'img'),
-//     filename: (req, file, callback) => callback(null, 'what.jpg')
 
-// })
-// const upload = multer({ storage });
-
-const storage = multer.memoryStorage({
-    destination: function (req, file, callback) {
-        callback(null, 'img')
-    },
-})
-
-const upload = multer({ storage: multer.memoryStorage() })
-
-
-
-app.post("/upload", upload.single("avatar"), async (req, res) => {
-    console.log('something!');
-    //const { filename: image } = ;
-    await sharp(req.file.buffer)
-        .resize({
-            width: 640,
-            height: 480,
-            fit: 'contain'
-        })
-        .jpeg()
-        .withMetadata()
-        .toFile(
-            path.join(__dirname, 'img.jpg')
-        )
-
-    res.redirect();
-})
-
-app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, '/index.html'));
-});
-
-
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`)
-})
-
-fs.watch(__dirname, (eventType, filename) => {
-    //console.log(eventType);
-    // could be either 'rename' or 'change'. new file event and delete
-    // also generally emit 'rename'
-    if (filename == "img.jpg") {
-        console.log("new_image", __dirname + "/img.jpg");
-    }
-
-})
 
 
 maxApi.addHandlers({

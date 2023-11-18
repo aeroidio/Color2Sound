@@ -16,7 +16,6 @@
     "url": "https://github.com/aeroidio/Invisible_Museum/issues"
   },
   "homepage": "https://github.com/aeroidio/Invisible_Museum#readme",
-  "description": "",
   "dependencies": {
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
@@ -25,5 +24,7 @@
     "path": "^0.12.7",
     "qrcode": "^1.5.3",
     "sharp": "^0.32.6"
-  }
+  },
+  "devDependencies": {},
+  "description": ""
 }
