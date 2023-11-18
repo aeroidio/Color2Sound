@@ -2,7 +2,7 @@
 
 const { exec } = require('child_process'); //Spawns a shell then executes the command within that shell, buffering any generated output. The command string passed to the exec function is processed directly by the shell and special characters (vary based on shell) need to be dealt with accordingly:
 const maxApi = require("max-api");
-const ip = require("ip")
+const ip = requirePackage("ip")
 
 
 
@@ -54,3 +54,5 @@ maxApi.addHandlers({
     )
 }
 )
+
+get_ip();
