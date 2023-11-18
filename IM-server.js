@@ -35,9 +35,10 @@ function requirePackage(packageName) {
 
 
 
-
 function get_ip() {
+
     maxApi.outlet(`${ip.address()}`)
+
 
 }
 
@@ -45,14 +46,8 @@ function get_ip() {
 
 
 maxApi.addHandlers({
-    qr: (ip) => (
-        qr(ip)
-    ),
-    clear_files: () => (clear_files()),
     get_ip: () => (
         get_ip()
     )
 }
 )
-
-get_ip();
